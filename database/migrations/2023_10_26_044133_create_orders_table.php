@@ -20,10 +20,10 @@ return new class extends Migration
             $table->datetime('dateBuy');
 
             $table->index('product_id','idx_porder_product');
-            $table->foreign('product_id')->references('id')->on('products')->onDelete('cascade');;
+            $table->foreign('product_id')->references('id')->on('products')->onDelete('cascade');
 
             $table->index('client_id','idx_order_client');
-            $table->foreign('client_id')->references('id')->on('clients')->onDelete('cascade');;
+            $table->foreign('client_id')->references('id')->on('clients')->onDelete('cascade');
 
             $table->timestamps();
             $table->softDeletes();

@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\AuthController;
 use App\Http\Controllers\PostsController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -46,22 +47,41 @@ Route::get('posts', function () {
     ]];
 });
 
-Route::get('posts-controller', [PostsController::class, 'index']);
-Route::get('post/{id}', [PostsController::class, 'getPostById']);
-Route::get('post-all', [PostsController::class, 'getAll']);
-Route::post('post-create', [PostsController::class, 'create']);
+Route::prefix('category')->group(function () {
+        Route::post('restore-Category', [\App\Http\Controllers\CategoriesController::class, 'restoreCategory']);
+        Route::post('store-Category', [\App\Http\Controllers\CategoriesController::class, 'store']);
+        Route::put('update-Category/{category}', [\App\Http\Controllers\CategoriesController::class, 'update']);
+        Route::get('categories', [\App\Http\Controllers\CategoriesController::class, 'index']);
+        Route::delete('delete-Category/{id}', [\App\Http\Controllers\CategoriesController::class, 'delete']);
+        Route::get('products-by-Category/{id}', [\App\Http\Controllers\CategoriesController::class, 'productsByCategory']);
+        Route::get('get-info', [\App\Http\Controllers\CategoriesController::class, 'getInfo']);
+});
 
-Route::put('post-update/{post}', [PostsController::class, 'update']);
+Route::prefix('post')->group(function () {
+    Route::get('posts-controller', [PostsController::class, 'index']);
+    Route::get('post/{id}', [PostsController::class, 'getPostById']);
+    Route::get('post-all', [PostsController::class, 'getAll']);
+    Route::post('post-create', [PostsController::class, 'create']);
+
+    Route::put('post-update/{post}', [PostsController::class, 'update']);
 
 //Second lesson laravel
-Route::post('post-store', [PostsController::class, 'store']);
-Route::get('post-by-title', [PostsController::class, 'getPostByTitle']);
+    Route::post('post-store', [PostsController::class, 'store']);
+    Route::get('post-by-title', [PostsController::class, 'getPostByTitle']);
+});
 
+Route::group([
 
-Route::post('restore-category', [\App\Http\Controllers\CategoriesController::class, 'restoreCategory']);
-Route::post('store-category', [\App\Http\Controllers\CategoriesController::class, 'store']);
-Route::put('update-category/{category}', [\App\Http\Controllers\CategoriesController::class, 'update']);
-Route::get('categories', [\App\Http\Controllers\CategoriesController::class, 'index']);
-Route::delete('delete-category/{id}', [\App\Http\Controllers\CategoriesController::class, 'delete']);
-Route::get('products-by-category/{id}', [\App\Http\Controllers\CategoriesController::class, 'productsByCategory']);
-Route::get('get-info', [\App\Http\Controllers\CategoriesController::class, 'getInfo']);
+    'middleware' => 'api',
+    'prefix' => 'auth'
+
+], function ($router) {
+
+    Route::post('login', [AuthController::class ,'login']);
+    Route::post('logout', [AuthController::class, 'logout']);
+    Route::post('refresh', [AuthController::class,'refresh']);
+    Route::post('me', [AuthController::class ,'me']);
+
+});
+
+Route::post('register', [\App\Http\Controllers\RegisterController::class, 'register']);

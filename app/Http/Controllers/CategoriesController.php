@@ -2,30 +2,24 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Controllers\Category\BaseController;
 use App\Http\Requests\category\CategoryRequest;
-use App\Http\Requests\post\UpdateRequest;
 use App\Models\Category;
-use App\Models\Post;
-use App\Models\Product;
+use App\Services\Category\CategoryService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
-class CategoriesController extends Controller
+class CategoriesController extends BaseController
 {
     /**
      * @param CategoryRequest $request
      * @return string
      */
-    public function store(CategoryRequest $request)
+    public function store(CategoryRequest $request, CategoryService $categoryService)
     {
         $category = $request->validated();
         if ($category) {
-            $categoryCreated = Category::create($category);
-            if ($categoryCreated) {
-                return 'good';
-            } else {
-                return $categoryCreated->getErrors()->all();
-            }
+            return $categoryService->store($category);
         }
     }
 
@@ -38,12 +32,7 @@ class CategoriesController extends Controller
     {
         $updatedCategory = $request->validated();
         if ($updatedCategory) {
-            $categoryUpdated = $category->update($updatedCategory);
-            if ($categoryUpdated) {
-                return 'good';
-            } else {
-                return $categoryUpdated->getErrors()->all();
-            }
+            return $this->service->update($category, $updatedCategory);
         }
     }
 
@@ -89,21 +78,22 @@ class CategoriesController extends Controller
         return $category ? $category->products : 'ошибка';
     }
 
-    public function getInfo()
+    public function getInfo(Request $request)
     {
 //        $product = Product::find(1);
 //        return $product->client;
+        $name = $request->query('name');
 
         $data = DB::table('orders')
             ->select(
                 'clients.last_name_doc',
                 'clients.first_name_doc',
                 'products.name AS product',
-                'categories.name AS category',)
+                'categories.name AS Category',)
             ->leftJoin('clients', 'clients.id', '=', 'orders.client_id')
             ->leftJoin('products', 'products.id', '=', 'orders.product_id')
             ->leftJoin('categories', 'categories.id', '=', 'products.category_id')
-            ->where('categories.name', '=', 'Milk')
+            ->where('categories.name', '=', $name)
             ->get();
 
         return $data;
