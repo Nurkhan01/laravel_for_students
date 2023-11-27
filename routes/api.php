@@ -47,13 +47,13 @@ Route::get('posts', function () {
         ],
 
     ]];
-});
+})->middleware(['jwt.auth', 'ensureUserHasRole:Moderator']);
 
 Route::prefix('category')->group(function () {
         Route::post('restore-Category', [\App\Http\Controllers\CategoriesController::class, 'restoreCategory']);
         Route::post('store-Category', [\App\Http\Controllers\CategoriesController::class, 'store']);
         Route::put('update-Category/{category}', [\App\Http\Controllers\CategoriesController::class, 'update']);
-        Route::get('categories', [\App\Http\Controllers\CategoriesController::class, 'index']);
+        Route::get('categories', [\App\Http\Controllers\CategoriesController::class, 'index'])->middleware(['jwt.auth','checkAdminRole']);
         Route::delete('delete-Category/{id}', [\App\Http\Controllers\CategoriesController::class, 'delete']);
         Route::get('products-by-Category/{id}', [\App\Http\Controllers\CategoriesController::class, 'productsByCategory']);
         Route::get('get-info', [\App\Http\Controllers\CategoriesController::class, 'getInfo']);
@@ -62,13 +62,14 @@ Route::prefix('category')->group(function () {
 Route::prefix('post')->group(function () {
     Route::get('posts-controller', [PostsController::class, 'index']);
     Route::get('post/{id}', [PostsController::class, 'getPostById']);
-    Route::get('post-all', [PostsController::class, 'getAll'])->middleware('checkAdminRole');;
-    Route::post('post-create', [PostsController::class, 'create']);
-
-    Route::put('post-update/{post}', [PostsController::class, 'update']);
+    Route::get('post-all', [PostsController::class, 'getAll']);
+    Route::middleware(['jwt.auth','checkAdminRole'])->group(function () {
+        Route::post('post-create', [PostsController::class, 'create']);
+        Route::put('post-update/{post}', [PostsController::class, 'update']);
+        Route::post('post-store', [PostsController::class, 'store']);
+    });
 
 //Second lesson laravel
-    Route::post('post-store', [PostsController::class, 'store']);
     Route::get('post-by-title', [PostsController::class, 'getPostByTitle']);
 });
 
@@ -86,23 +87,21 @@ Route::group([
 
 });
 
-Route::post('register', [\App\Http\Controllers\RegisterController::class, 'register']);
-
 // Create Role
-Route::post('/roles', [RolesController::class, 'createRole'])->middleware(['jwt.auth']);;
+Route::post('/roles', [RolesController::class, 'createRole'])->middleware(['jwt.auth']);
 
 // Get Roles
-Route::get('/roles', [RolesController::class, 'getRoles'])->middleware(['jwt.auth']);;
+Route::get('/roles', [RolesController::class, 'getRoles'])->middleware(['jwt.auth']);
 
 // Find Role by Name
-Route::get('/roles/{name}', [RolesController::class, 'getRolesByName'])->middleware(['jwt.auth']);;
+Route::get('/roles/{name}', [RolesController::class, 'getRolesByName'])->middleware(['jwt.auth']);
 
 // Create Permission
-Route::post('/permissions', [PermissionController::class, 'createPermission'])->middleware(['jwt.auth']);;
+Route::post('/permissions', [PermissionController::class, 'createPermission'])->middleware(['jwt.auth']);
 
 // Get Permissions
-Route::get('/permissions', [PermissionController::class, 'index'])->middleware(['jwt.auth']);;
+Route::get('/permissions', [PermissionController::class, 'index'])->middleware(['jwt.auth']);
 
 // Find Permission by Name
-Route::get('/permissions/{name}', [PermissionController::class, 'findPermissionByName'])->middleware(['jwt.auth']);;
+Route::get('/permissions/{name}', [PermissionController::class, 'findPermissionByName'])->middleware(['jwt.auth']);
 

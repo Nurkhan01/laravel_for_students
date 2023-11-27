@@ -18,7 +18,8 @@ class CheckAdminRole
      */
     public function handle(Request $request, Closure $next)
     {
-        if (JWTAuth::user()['id'] == 4) {
+        $user = JWTAuth::parseToken()->authenticate();
+        if ($user->hasRole('Admin')) {
             return $next($request);
         }
 
