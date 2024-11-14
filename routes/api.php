@@ -4,6 +4,7 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\Permissions\PermissionController;
 use App\Http\Controllers\Permissions\RolesController;
 use App\Http\Controllers\PostsController;
+use App\Http\Controllers\RegisterController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -63,11 +64,12 @@ Route::prefix('post')->group(function () {
     Route::get('posts-controller', [PostsController::class, 'index']);
     Route::get('post/{id}', [PostsController::class, 'getPostById']);
     Route::get('post-all', [PostsController::class, 'getAll']);
-    Route::middleware(['jwt.auth','checkAdminRole'])->group(function () {
+    Route::delete('delete/{id}', [PostsController::class, 'deletePost']);
+//    Route::middleware(['jwt.auth','checkAdminRole'])->group(function () {
         Route::post('post-create', [PostsController::class, 'create']);
         Route::put('post-update/{post}', [PostsController::class, 'update']);
         Route::post('post-store', [PostsController::class, 'store']);
-    });
+//    });
 
 //Second lesson laravel
     Route::get('post-by-title', [PostsController::class, 'getPostByTitle']);
@@ -86,6 +88,8 @@ Route::group([
     Route::post('me', [AuthController::class ,'me']);
 
 });
+
+Route::post('register', [RegisterController::class ,'register']);
 
 // Create Role
 Route::post('/roles', [RolesController::class, 'createRole'])->middleware(['jwt.auth']);

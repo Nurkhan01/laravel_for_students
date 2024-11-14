@@ -15,18 +15,21 @@ class PostsController extends Controller
         return [
             [
                 'id' => 1,
+                'userId' => 1,
                 'title' => 'Programing',
                 'description' => 'This post about programming',
                 'body' => 'In 2023 we have a lot of good programming languages, the mos popular are: JavaScript, Php, Golang, Python', 'Java', 'C#', 'C++'
             ],
             [
                 'id' => 2,
+                'userId' => 2,
                 'title' => 'University in Almaty',
                 'description' => 'This post about universities that located In Almaty',
                 'body' => 'If you want to join to universities, firstful you have to think about Almaty'
             ],
             [
                 'id' => 3,
+                'userId' => 2,
                 'title' => 'Computers',
                 'description' => 'This post about computers',
                 'body' => 'Nowadays in companies use DeLL, Lenovo and etc. computers'
@@ -69,7 +72,7 @@ class PostsController extends Controller
 
             $tagsAsString = json_encode($post['tags']);
             $post['tags'] = $tagsAsString;
-
+            //INSERT INTO posts
             $postCreated = Post::create($post);
             if ($postCreated) {
                 return 'good';
@@ -98,5 +101,18 @@ class PostsController extends Controller
     {
         $title = $request->input('title');
         return Post::where('title', $title)->get();
+    }
+
+    public function deletePost($id){
+        {
+//            SELECT * FROM posts WHERE id = $id
+            $post = Post::find($id);
+            if (!$post) {
+                return response()->json(['message' => 'Post not found'], 404);
+            }
+//            DELETE FROM post WHERE id = $id;
+            $post->delete();
+            return response()->json(['message' => 'Post deleted successfully'], 200);
+        }
     }
 }
