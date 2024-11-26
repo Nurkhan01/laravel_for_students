@@ -48,13 +48,14 @@ Route::get('posts', function () {
         ],
 
     ]];
-})->middleware(['jwt.auth', 'ensureUserHasRole:Moderator']);
+})->middleware(['jwt.auth', 'ensureUserHasRole:moderator']);
 
 Route::prefix('category')->group(function () {
         Route::post('restore-Category', [\App\Http\Controllers\CategoriesController::class, 'restoreCategory']);
         Route::post('store-Category', [\App\Http\Controllers\CategoriesController::class, 'store']);
         Route::put('update-Category/{category}', [\App\Http\Controllers\CategoriesController::class, 'update']);
         Route::get('categories', [\App\Http\Controllers\CategoriesController::class, 'index'])->middleware(['jwt.auth','checkAdminRole']);
+        Route::get('categories-full', [\App\Http\Controllers\CategoriesController::class, 'categoriesFull'])->middleware(['jwt.auth','checkAdminRole']);
         Route::delete('delete-Category/{id}', [\App\Http\Controllers\CategoriesController::class, 'delete']);
         Route::get('products-by-Category/{id}', [\App\Http\Controllers\CategoriesController::class, 'productsByCategory']);
         Route::get('get-info', [\App\Http\Controllers\CategoriesController::class, 'getInfo']);
@@ -63,7 +64,7 @@ Route::prefix('category')->group(function () {
 Route::prefix('post')->group(function () {
     Route::get('posts-controller', [PostsController::class, 'index']);
     Route::get('post/{id}', [PostsController::class, 'getPostById']);
-    Route::get('post-all', [PostsController::class, 'getAll']);
+    Route::get('post-all', [PostsController::class, 'getAll'])->middleware('permission:crud_product');
     Route::delete('delete/{id}', [PostsController::class, 'deletePost']);
 //    Route::middleware(['jwt.auth','checkAdminRole'])->group(function () {
         Route::post('post-create', [PostsController::class, 'create']);

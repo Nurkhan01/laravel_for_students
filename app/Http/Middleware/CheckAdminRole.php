@@ -19,7 +19,7 @@ class CheckAdminRole
     public function handle(Request $request, Closure $next)
     {
         $user = JWTAuth::parseToken()->authenticate();
-        if ($user->hasRole('Admin')) {
+        if ($user->hasRole('admin')) {
             return $next($request);
         }
 

@@ -58,6 +58,10 @@ class CategoriesController extends BaseController
         return Category::all();
     }
 
+    public function categoriesFull(){
+        return DB::table('categories')->whereNull('deleted_at')->get();
+    }
+
     public function restoreCategory()
     {
         $categories = Category::withTrashed()->get();
@@ -74,6 +78,7 @@ class CategoriesController extends BaseController
      */
     public function productsByCategory($id)
     {
+//        SELECT * FROM products WHERE category_id = $id
         $category = Category::find($id);
         return $category ? $category->products : 'ошибка';
     }
